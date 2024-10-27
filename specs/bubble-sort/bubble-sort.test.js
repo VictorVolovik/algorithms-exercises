@@ -11,12 +11,30 @@
 */
 
 function bubbleSort(nums) {
-  // code goes here
+  let finishedItterations = 0;
+  let shouldIterate = true;
+
+  while (shouldIterate) {
+    shouldIterate = false;
+    const toIterate = nums.length - 1 - finishedItterations;
+
+    for (let i = 0; i < toIterate; i++) {
+      let left = nums[i];
+      let right = nums[i + 1];
+      if (left > right) {
+        nums[i] = right;
+        nums[i + 1] = left;
+        shouldIterate = true;
+      }
+    }
+    finishedItterations++;
+  }
+  return nums;
 }
 
 // unit tests
 // do not modify the below code
-test.skip("bubble sort", function () {
+test("bubble sort", function () {
   const nums = [10, 5, 3, 8, 2, 6, 4, 7, 9, 1];
   const sortedNums = bubbleSort(nums);
   expect(sortedNums).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
