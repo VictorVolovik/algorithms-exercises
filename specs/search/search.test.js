@@ -4,16 +4,46 @@
 // it's up to you what to return if the object isn't found (we're not testing that)
 
 function linearSearch(id, array) {
-  // code goes here
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].id === id) {
+      return array[i];
+    }
+  }
 }
 
 function binarySearch(id, array) {
-  // code goes here
+  let toSearch = [...array];
+  let middle = Math.floor(array.length / 2);
+  let found = -1;
+
+  while (found === -1) {
+    const left = toSearch.slice(0, middle - 1);
+    const right = toSearch.slice(middle + 1);
+    const leftEnd = left[left.length - 1];
+    const rightStart = right[0];
+
+    if (leftEnd.id === id) {
+      return leftEnd;
+    }
+    if (rightStart.id === id) {
+      return rightStart;
+    }
+
+    if (leftEnd.id > id) {
+      toSearch = left;
+      middle = Math.floor(left.length / 2);
+    } else {
+      toSearch = right;
+      middle = Math.floor(right.length / 2);
+    }
+  }
+
+  return found;
 }
 
 // unit tests
 // do not modify the below code
-test.skip("linear search", function () {
+test("linear search", function () {
   const lookingFor = { id: 5, name: "Brian" };
   expect(
     linearSearch(5, [
@@ -30,12 +60,12 @@ test.skip("linear search", function () {
       { id: 2, name: "Marc" },
       { id: 51, name: "Chris" },
       lookingFor,
-      { id: 14, name: "Ben" }
-    ])
+      { id: 14, name: "Ben" },
+    ]),
   ).toBe(lookingFor);
 });
 
-test.skip("binary search", function () {
+test("binary search", function () {
   const lookingFor = { id: 23, name: "Brian" };
   expect(
     binarySearch(23, [
@@ -52,7 +82,7 @@ test.skip("binary search", function () {
       { id: 19, name: "Marc" },
       { id: 21, name: "Chris" },
       lookingFor,
-      { id: 24, name: "Ben" }
-    ])
+      { id: 24, name: "Ben" },
+    ]),
   ).toBe(lookingFor);
 });
