@@ -30,31 +30,32 @@ class LinkedList {
     this.length = 0;
   }
   push(value) {
-    const node = new Node(value);
+    let node = new Node(this.tail, value);
     this.length++;
     if (!this.head) {
       this.head = node;
+    }
+    if (!this.tail) {
+      this.tail = node;
     } else {
       this.tail.next = node;
-    }
-    this.tail = node;
-  }
-  pop() {
-    return this.delete(this.length - 1);
-  }
-  _find(index) {
-    if (index >= this.length) return null;
-    let current = this.head;
-    for (let i = 0; i < index; i++) {
-      current = current.next;
+      this.tail = node;
     }
 
-    return current;
+    return node;
+  }
+  pop() {
+    const removed = { ...this.tail };
+    removed.next = null;
+    const found = this._find(this.length - 2);
+    this.tail = found;
+
+    this.length--;
+    return removed.value;
   }
   get(index) {
-    const node = this._find(index);
-    if (!node) return void 0;
-    return node.value;
+    const found = this._find(index);
+    return found?.value ?? undefined;
   }
   delete(index) {
     if (index === 0) {
@@ -65,24 +66,40 @@ class LinkedList {
         this.head = null;
         this.tail = null;
       }
+
       this.length--;
       return head.value;
     }
 
-    const node = this._find(index - 1);
-    const excise = node.next;
-    if (!excise) return null;
-    node.next = excise.next;
-    if (!node.next) this.tail = node.next;
+    const prev = this._find(index - 1);
+    const removed = prev.next;
+    if (!removed) return null;
+    prev.next = removed.next;
+    if (!prev.next.next) this.tail = prev.next;
+
     this.length--;
-    return excise.value;
+    return removed.value;
+  }
+  test(search, nodeValue) {
+    return search === nodeValue;
+  }
+  testIndex(search, __, i) {
+    return search === i;
+  }
+  _find(index) {
+    let found = this.head;
+
+    for (let i = 0; i < this.length; i++) {
+      if (i === index) return found;
+      found = found.next;
+    }
   }
 }
 
 class Node {
-  constructor(value) {
+  constructor(next, value) {
+    this.next = next;
     this.value = value;
-    this.next = null;
   }
 }
 

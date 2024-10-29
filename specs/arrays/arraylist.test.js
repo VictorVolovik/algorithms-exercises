@@ -18,12 +18,46 @@
 */
 
 class ArrayList {
-  // code goes here
+  constructor() {
+    this.data = {};
+    this.length = 0;
+  }
+  push(value) {
+    this.data[this.length] = value;
+    this.length++;
+    return this.length;
+  }
+  pop() {
+    const element = this.data[this.length - 1];
+    delete this.data[this.length - 1];
+    this.length--;
+    return element;
+  }
+  get(index) {
+    return this.data[index];
+  }
+  set(index, value) {
+    if (index >= this.length) {
+      throw new RangeError("Array out of bounds");
+    }
+    this.data[index] = value;
+  }
+  delete(index) {
+    if (index >= this.length) {
+      throw new RangeError("Array out of bounds");
+    }
+    delete this.data[index];
+    this.length--;
+    for (let key = index; key < this.length; key++) {
+      this.data[key] = this.data[key + 1];
+    }
+    return true;
+  }
 }
 
 // unit tests
 // do not modify the below code
-describe.skip("ArrayList", function () {
+describe("ArrayList", function () {
   const range = (length) =>
     Array.apply(null, { length: length }).map(Number.call, Number);
   const abcRange = (length) =>
@@ -61,8 +95,23 @@ describe.skip("ArrayList", function () {
     expect(list.get(27)).toEqual("z");
     expect(list.get(0)).toEqual("first");
     expect(list.get(9)).toEqual("h");
+    expect(list.get(42)).toEqual(undefined);
     list.pop();
     expect(list.get(list.length - 1)).toEqual("y");
+  });
+
+  test("set", () => {
+    list.push("first");
+    list.set(0, "changed");
+    expect(list.get(0)).toEqual("changed");
+    list.push("second");
+    list.set(1, "changed too");
+    expect(list.get(1)).toEqual("changed too");
+    list.pop();
+    expect(list.get(list.length - 1)).toEqual("changed");
+    expect(() => list.set(42, "error")).toThrow(
+      new RangeError("Array out of bounds"),
+    );
   });
 
   test("delete", () => {
@@ -74,5 +123,8 @@ describe.skip("ArrayList", function () {
     list.delete(0);
     expect(list.length).toEqual(24);
     expect(list.get(0)).toEqual("b");
+    expect(() => list.delete(42)).toThrow(
+      new RangeError("Array out of bounds"),
+    );
   });
 });
