@@ -17,17 +17,49 @@ right - Node/object - the right node which itself may be another tree
 */
 
 class Tree {
-  // code goes here
+  constructor() {
+    this.root = null;
+  }
+  add(value) {
+    const node = new Node(value);
+    if (!this.root) {
+      this.root = node;
+    } else {
+      this.root.add(node);
+    }
+  }
+  toObject() {
+    return this.root;
+  }
 }
 
 // you might consider using a Node class too
-// class Node {
-//   // code maybe goes here
-// }
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+  add(node) {
+    if (node.value < this.value) {
+      if (this.left) {
+        this.left.add(node);
+      } else {
+        this.left = node;
+      }
+    } else {
+      if (this.right) {
+        this.right.add(node);
+      } else {
+        this.right = node;
+      }
+    }
+  }
+}
 
 // unit tests
 // do not modify the below code
-describe.skip("Binary Search Tree", function () {
+describe("Binary Search Tree", function () {
   it("creates a correct tree", () => {
     const nums = [3, 7, 4, 6, 5, 1, 10, 2, 9, 8];
     const tree = new Tree();
