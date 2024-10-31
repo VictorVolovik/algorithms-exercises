@@ -21,11 +21,10 @@ class Tree {
     this.root = null;
   }
   add(value) {
-    const node = new Node(value);
     if (!this.root) {
-      this.root = node;
+      this.root = new Node(value);
     } else {
-      this.root.add(node);
+      this.root.add(value);
     }
   }
   toObject() {
@@ -33,25 +32,24 @@ class Tree {
   }
 }
 
-// you might consider using a Node class too
 class Node {
   constructor(value) {
     this.value = value;
     this.left = null;
     this.right = null;
   }
-  add(node) {
-    if (node.value < this.value) {
+  add(value) {
+    if (value < this.value) {
       if (this.left) {
-        this.left.add(node);
+        this.left.add(value);
       } else {
-        this.left = node;
+        this.left = new Node(value);
       }
     } else {
       if (this.right) {
-        this.right.add(node);
+        this.right.add(value);
       } else {
-        this.right = node;
+        this.right = new Node(value);
       }
     }
   }
@@ -59,7 +57,7 @@ class Node {
 
 // unit tests
 // do not modify the below code
-describe("Binary Search Tree", function () {
+describe("Binary Search Tree", function() {
   it("creates a correct tree", () => {
     const nums = [3, 7, 4, 6, 5, 1, 10, 2, 9, 8];
     const tree = new Tree();
