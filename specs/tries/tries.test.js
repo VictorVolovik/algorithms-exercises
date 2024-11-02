@@ -13,17 +13,68 @@ const { CITY_NAMES } = require("./cities.js");
 const _ = require("lodash"); // needed for unit tests
 
 class Node {
-  // you don't have to use this data structure, this is just how I did it
-  // you'll almost definitely need more methods than this and a constructor
-  // and instance variables
+  constructor(string) {
+    this.children = [];
+    this.terminus = false;
+    this.value = string[0];
+    if (string.length > 1) {
+      this.children.push(new Node(string.substr(1)));
+    } else {
+      this.terminus = true;
+    }
+  }
+  add(string) {
+    const value = string[0];
+    const next = string.substr(1);
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      if (child.value === value) {
+        if (next) {
+          child.add(next);
+        } else {
+          child.terminus = true;
+        }
+        return;
+      }
+    }
+
+    this.children.push(new Node(string));
+  }
   complete(string) {
-    return [];
+    let completions = [];
+
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      completions = completions.concat(child._complete(string, "", []));
+    }
+
+    return completions;
+  }
+  _complete(search, built, completions) {
+    if (completions.length >= 3 || (search && search[0] !== this.value)) {
+      return completions;
+    }
+    if (this.terminus) {
+      completions.push(built + this.value);
+    }
+
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+      child._complete(search.substr(1), built + this.value, completions);
+    }
+
+    return completions;
   }
 }
 
 const createTrie = (words) => {
   // you do not have to do it this way; this is just how I did it
   const root = new Node("");
+
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    root.add(word.toLowerCase());
+  }
 
   // more code should go here
 
@@ -32,14 +83,14 @@ const createTrie = (words) => {
 
 // unit tests
 // do not modify the below code
-describe.skip("tries", function () {
+describe("tries", function() {
   test("dataset of 10 – san", () => {
     const root = createTrie(CITY_NAMES.slice(0, 10));
     const completions = root.complete("san");
     expect(completions.length).toBe(3);
     expect(
       _.intersection(completions, ["san antonio", "san diego", "san jose"])
-        .length
+        .length,
     ).toBe(3);
   });
 
@@ -55,7 +106,7 @@ describe.skip("tries", function () {
     const completions = root.complete("d");
     expect(completions.length).toBe(3);
     expect(
-      _.intersection(completions, ["dallas", "detroit", "denver"]).length
+      _.intersection(completions, ["dallas", "detroit", "denver"]).length,
     ).toBe(3);
   });
 
@@ -69,8 +120,8 @@ describe.skip("tries", function () {
         "new orleans",
         "new haven",
         "newark",
-        "newport news"
-      ]).length
+        "newport news",
+      ]).length,
     ).toBe(3);
   });
 
@@ -79,7 +130,7 @@ describe.skip("tries", function () {
     const completions = root.complete("bo");
     expect(completions.length).toBe(2);
     expect(_.intersection(completions, ["boston", "boise city"]).length).toBe(
-      2
+      2,
     );
   });
 
@@ -88,7 +139,8 @@ describe.skip("tries", function () {
     const completions = root.complete("sal");
     expect(completions.length).toBe(3);
     expect(
-      _.intersection(completions, ["salt lake city", "salem", "salinas"]).length
+      _.intersection(completions, ["salt lake city", "salem", "salinas"])
+        .length,
     ).toBe(3);
   });
 
@@ -127,13 +179,13 @@ describe.skip("tries", function () {
         "santee",
         "sandy",
         "sandy springs",
-        "sanford"
-      ]).length
+        "sanford",
+      ]).length,
     ).toBe(3);
   });
 });
 
-describe.skip("edge cases", () => {
+describe("edge cases", () => {
   test("handle whole words – seattle", () => {
     const root = createTrie(CITY_NAMES.slice(0, 30));
     const completions = root.complete("seattle");
